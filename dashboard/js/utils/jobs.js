@@ -43,8 +43,13 @@ define([
               }
               allocatedCPUs[node][job] = nodesCPUs[node];
               if(nodesCPUsLayout !== null){
+				if (!allocatedCPUs[node].hasOwnProperty('layout')){
                 allocatedCPUs[node]['layout']=nodesCPUsLayout[node];
-              }
+				}
+				else {
+				  allocatedCPUs[node]['layout'] = allocatedCPUs[node]['layout'].concat(nodesCPUsLayout[node]);
+				}
+			  }
             }
           }
         }

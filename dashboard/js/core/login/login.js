@@ -49,12 +49,12 @@ define([
         }
 
         $.ajax(cluster.api.url + cluster.api.path + '/login', options)
-          .success(function(response) {
+          .done(function(response) {
             tokenUtils.setToken(cluster, response.id_token);
             userUtils.setUser(cluster, response);
             callback(null, null);
           })
-          .error(function(error) {
+          .fail(function(error) {
             return callback(true, error);
           });
       };
@@ -118,9 +118,9 @@ define([
       $(document).trigger('pageLoaded');
 
       // hack for placeholder in IE
-      if ($.browser.msie) {
-        fakePlaceholder();
-      }
+      //if ($.browser.msie) {
+      //  fakePlaceholder();
+      //}
 
       if (config.cluster.authentication.guest) {
         $('#loginform #guest').show();

@@ -171,7 +171,7 @@ define([
         });
 
         $.ajax(config.cluster.api.url + config.cluster.api.path + '/nodeset', ajaxOptions)
-          .success(function(data) {
+          .done(function(data) {
             nodesItems = data;
 
             jobsFiltered = jobsFiltered.filter(function(item) {

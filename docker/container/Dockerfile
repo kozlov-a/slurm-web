@@ -20,7 +20,7 @@
 # See https://github.com/phusion/baseimage-docker/blob/master/Changelog.md for
 # a list of version numbers.
 
-FROM phusion/baseimage:0.9.19
+FROM phusion/baseimage:focal-1.1.0
 MAINTAINER Kilian Cavalotti <kilian@stanford.edu>
 
 # Set correct environment variables.
@@ -36,9 +36,9 @@ CMD ["/sbin/my_init"]
 # Install locales
 RUN locale-gen en_US.UTF-8
 
-ENV BUILD_DEPS="git devscripts equivs apt-utils apache2-dev libslurm-dev python-setuptools cython python-dev libslurmdb-dev libslurm-dev ca-certificates"
+ENV BUILD_DEPS="git devscripts equivs apt-utils apache2-dev python3-setuptools cython3 python3-dev ca-certificates"
 
-ENV RUN_DEPS="apache2 libapache2-mod-wsgi javascript-common python-flask clustershell libjs-bootstrap libjs-jquery-flot libjs-jquery-tablesorter munge slurm-llnl node-uglify fonts-dejavu-core python-ldap python-redis libjs-requirejs libjs-requirejs-text libjs-three libjs-d3 libjs-handlebars"
+ENV RUN_DEPS="apache2 libapache2-mod-wsgi-py3 javascript-common clustershell libjs-bootstrap libjs-jquery-flot libjs-jquery-tablesorter munge node-uglify fonts-dejavu-core python-redis libjs-requirejs libjs-requirejs-text libjs-three libjs-d3 libjs-handlebars"
 
 # Enable universe and multiverse
 #RUN cat /etc/apt/sources.list && \
@@ -50,33 +50,54 @@ RUN apt-get update -q && \
     apt-get -y install $BUILD_DEPS $RUN_DEPS && \
     ln -s /usr/lib/x86_64-linux-gnu/ /usr/lib64
 
+
+RUN apt-get -y install python3-all python3-setuptools
 RUN a2enmod wsgi && \
     a2enconf javascript-common
 
 # Build and install specific deps
-ENV SLURM_VER=15.08.2
-RUN cd /usr/src && \
-    git clone https://github.com/PySlurm/pyslurm.git && \
-    cd pyslurm && \
-    git checkout remotes/origin/$SLURM_VER && \
-    sed -i 's/__max_slurm_hex_version__ = "0x0f0803"/__max_slurm_hex_version__ = "0x0f0807"/' setup.py && \
-    tar cvfj ../python-pyslurm_$SLURM_VER.orig.tar.bz2 --exclude .git . && \
-    mk-build-deps -ri -t "apt-get -y --no-install-recommends" && \
-    dch -v $SLURM_VER-1 -D testing "New upstream release" && \
-    debuild -us -uc && \
-    dpkg -i ../python-pyslurm_$SLURM_VER-1_amd64.deb
+#RUN mkdir -p /usr/local/lib/slurm/
+#RUN mkdir -p /usr/local/include/slurm/  
+#ADD include/slurm/ /usr/local/include/slurm/
+#ADD lib/ /usr/local/lib/
+
+RUN apt-get -y install python
+RUN apt-get -y install libmunge-dev
 
 RUN cd /usr/src && \
-    git clone https://github.com/edf-hpc/opentypejs.git && \
+    git -c http.sslVerify=false clone https://github.com/SchedMD/slurm.git && \
+    cd slurm && \
+    git checkout remotes/origin/slurm-20.11 && \
+    ./configure  && \
+    make -j 20 && \
+    make install
+
+ENV SLURM_VER=v20.11.8-1
+RUN cd /usr/src && \
+    git -c http.sslVerify=false clone https://github.com/PySlurm/pyslurm.git && \
+    cd pyslurm && \
+    git checkout $SLURM_VER && \
+    python3 setup.py build --slurm-lib=/usr/local/ --slurm-inc=/usr/local/include/slurm/ && \
+    python3 setup.py install
+    #sed -i 's/__max_slurm_hex_version__ = "0x0f0803"/__max_slurm_hex_version__ = "0x130504"/' setup.py && \
+    #tar cvfj ../python-pyslurm_$SLURM_VER.orig.tar.bz2 --exclude .git . && \
+    #mk-build-deps -ri -t "apt-get -y --no-install-recommends" && \
+    #dch -v $SLURM_VER-1 -D testing "New upstream release" && \
+    #debuild -us -uc && \
+    #dpkg -i ../python-pyslurm_$SLURM_VER-1_amd64.deb
+
+RUN cd /usr/src && \
+    git -c http.sslVerify=false clone https://github.com/edf-hpc/opentypejs.git && \
     cd opentypejs && \
     git checkout debian/0.4.3-2 && \
 	tar cvfj ../opentypejs_0.4.3.orig.tar.bz2 --exclude .git . && \
 	mk-build-deps -ri -t "apt-get -y --no-install-recommends" && \
 	debuild -us -uc && \
-	dpkg -i ../node-opentypejs_0.4.3-2_all.deb
+	dpkg -i ../node-opentypejs_0.4.3-2_all.deb && \
+        cp package.json /usr/lib/nodejs/
 
 RUN cd /usr/src && \
-	git clone https://github.com/edf-hpc/libjs-bootstrap-typeahead.git && \
+	git -c http.sslVerify=false  clone https://github.com/edf-hpc/libjs-bootstrap-typeahead.git && \
 	cd libjs-bootstrap-typeahead/ && \
     git checkout debian/0.11.1-1 && \
 	tar cvfj ../libjs-bootstrap-typeahead_0.11.1.orig.tar.bz2 --exclude .git . && \
@@ -84,7 +105,7 @@ RUN cd /usr/src && \
 	dpkg -i ../libjs-bootstrap-typeahead_0.11.1-1_all.deb
 
 RUN cd /usr/src && \
-	git clone https://github.com/edf-hpc/libjs-bootstrap-tagsinput.git && \
+	git -c http.sslVerify=false clone https://github.com/edf-hpc/libjs-bootstrap-tagsinput.git && \
 	cd libjs-bootstrap-tagsinput/ && \
     git checkout debian/0.8.0-1 && \
 	tar cvfj ../libjs-bootstrap-tagsinput_0.8.0.orig.tar.bz2 --exclude .git . && \
@@ -92,12 +113,51 @@ RUN cd /usr/src && \
 	dpkg -i ../libjs-bootstrap-tagsinput_0.8.0-1_all.deb
 
 
+RUN apt-get -y install python3-pip dh-python libjs-async python3-ldap python3-redis 
+RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install  Flask MarkupSafe 
+#RUN python3 -m pip --proxy=http://proxy.ad.speechpro.com:3128 install -U pip
+#RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install --upgrade pip
+#RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install Flask MarkupSafe
+
 RUN cd /usr/src && \
-    git clone https://github.com/edf-hpc/slurm-web.git && \
+    git -c http.sslVerify=false clone https://github.com/kozlov-a/slurm-web.git && \
     cd slurm-web && \
-    git checkout debian/2.0.0 && \
+    git checkout slurm-20.11 && \
+    sed -i "s/'\*.wsgi'/['\*.wsgi']/" setup.py && \
+    sed -i '/ python3-pyslurm (>= 16.05),/d' debian/control && \
+    sed -i '/ python3-flask,/d' debian/control && \
+    sed -i 's/\.success/\.done/' dashboard/js/core/login/login.js  && \
+    sed -i 's/\.success/\.done/' dashboard/js/modules/jobs-map/jobs-map.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/modules/3d-view/iframe.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/modules/racks/racks.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/modules/gantt/gantt.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/modules/topology/topology.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/modules/reservations/reservations.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/modules/partitions/partitions.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/modules/qos/qos.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/modules/jobs/jobs.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/core/clusters/clusters.js && \
+    sed -i 's/\.success/\.done/' dashboard/js/utils/tagsinput.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/core/login/login.js  && \
+    sed -i 's/\.error/\.fail/' dashboard/js/modules/jobs-map/jobs-map.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/modules/3d-view/iframe.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/modules/racks/racks.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/modules/gantt/gantt.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/modules/topology/topology.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/modules/reservations/reservations.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/modules/partitions/partitions.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/modules/qos/qos.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/modules/jobs/jobs.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/core/clusters/clusters.js && \
+    sed -i 's/\.error/\.fail/' dashboard/js/utils/tagsinput.js && \
     debuild -us -uc && \
     dpkg -i ../slurm-web-*deb
+
+#    sed -i '/ python3-pyslurm (>= 16.05),/d' debian/control && \
+#    sed -i '/                      'pyslurm',/d' setup.py && \
+#    sed -i "/    python_requires='>=3.5',/d" setup.py && \
+#    debuild -us -uc && \
+#    dpkg -i ../slurm-web-*deb
 
 # Create apache2 service file and start it
 RUN rm /etc/apache2/sites-available/default-ssl.conf && \
@@ -117,7 +177,6 @@ RUN chown munge: /var/log/munge /var/lib/munge && \
     mkdir -p /etc/service/munge
 COPY munge.sh /etc/service/munge/run
 RUN chmod +x /etc/service/munge/run
-
 
 # Cleanup
 RUN apt-get clean

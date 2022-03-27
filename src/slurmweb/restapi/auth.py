@@ -200,6 +200,7 @@ class User(object):
 
             # authenticate user on ldap
             user_dn = "uid=%s,%s" % (login, base_people)
+            user_dn = "%s@%s" % (login,base_people)
             conn.simple_bind_s(user_dn, password)
 
             print("User %s authenticated" % login)

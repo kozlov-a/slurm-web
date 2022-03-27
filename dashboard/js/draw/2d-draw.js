@@ -255,7 +255,8 @@ define([
           core.color = pickJobColor(parseInt(job, 10));
 
           if(allocatedCPUs['layout'] !== null){
-            for(coreLayout in allocatedCPUs['layout']){
+		    for (; coreId < coresDrawn + coresJobNumber; coreId++) {
+            //for(coreLayout in allocatedCPUs['layout']){
               core.coords = getCoreABSCoordinates(node, allocatedCPUs['layout'][coreLayout], coresRows, coresColumns, core.size);
               core.x = Math.floor(core.coords.x);
               core.y = Math.floor(core.coords.y);
@@ -264,6 +265,7 @@ define([
               coresDrawnLayout.push(allocatedCPUs['layout'][coreLayout]);
             }
           }
+		  coresDrawn += coresJobNumber;
         }
       }
       else{
