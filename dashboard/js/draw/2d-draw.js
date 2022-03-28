@@ -259,12 +259,12 @@ define([
 		    for (; coreId < coresDrawn + coresJobNumber; coreId++) {
             //for(coreLayout in allocatedCPUs['layout']){
 			  coreLayout = allocatedCPUs['layout'][coreId];
-              core.coords = getCoreABSCoordinates(node, allocatedCPUs['layout'][coreLayout], coresRows, coresColumns, core.size);
+              core.coords = getCoreABSCoordinates(node, coreLayout, coresRows, coresColumns, core.size);
               core.x = Math.floor(core.coords.x);
               core.y = Math.floor(core.coords.y);
               self.intersections.addCoreIntersections({ rack: rack.name, node: rackNode.name, core: coreId, job: job }, core);
               drawRectangleBorder(ctx, core.x, core.y, core.size, core.size, 1, core.color, colors.COREBORDER);
-              coresDrawnLayout.push(allocatedCPUs['layout'][coreLayout]);
+              coresDrawnLayout.push(coreLayout);
             }
           }
 		  coresDrawn += coresJobNumber;

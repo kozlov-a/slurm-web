@@ -126,18 +126,6 @@ RUN cd /usr/src && \
     sed -i "s/'\*.wsgi'/['\*.wsgi']/" setup.py && \
     sed -i '/ python3-pyslurm (>= 16.05),/d' debian/control && \
     sed -i '/ python3-flask,/d' debian/control && \
-    sed -i 's/\.success/\.done/' dashboard/js/core/login/login.js  && \
-    sed -i 's/\.success/\.done/' dashboard/js/modules/jobs-map/jobs-map.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/modules/3d-view/iframe.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/modules/racks/racks.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/modules/gantt/gantt.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/modules/topology/topology.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/modules/reservations/reservations.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/modules/partitions/partitions.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/modules/qos/qos.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/modules/jobs/jobs.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/core/clusters/clusters.js && \
-    sed -i 's/\.success/\.done/' dashboard/js/utils/tagsinput.js && \
     sed -i 's/\.error/\.fail/' dashboard/js/core/login/login.js  && \
     sed -i 's/\.error/\.fail/' dashboard/js/modules/jobs-map/jobs-map.js && \
     sed -i 's/\.error/\.fail/' dashboard/js/modules/3d-view/iframe.js && \
