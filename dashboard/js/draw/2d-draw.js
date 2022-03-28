@@ -257,6 +257,7 @@ define([
           if(allocatedCPUs['layout'] !== null){
 		    for (; coreId < coresDrawn + coresJobNumber; coreId++) {
             //for(coreLayout in allocatedCPUs['layout']){
+			  coreLayout = allocatedCPUs['layout'][coreId];
               core.coords = getCoreABSCoordinates(node, allocatedCPUs['layout'][coreLayout], coresRows, coresColumns, core.size);
               core.x = Math.floor(core.coords.x);
               core.y = Math.floor(core.coords.y);
