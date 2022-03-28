@@ -250,6 +250,7 @@ define([
       }
 
       if(allocatedCPUs){
+		coreId = 0;
         for (job in allocatedCPUs) {
           coresJobNumber = allocatedCPUs[job];
           core.color = pickJobColor(parseInt(job, 10));
