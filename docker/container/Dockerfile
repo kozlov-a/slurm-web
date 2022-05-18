@@ -38,7 +38,7 @@ RUN locale-gen en_US.UTF-8
 
 ENV BUILD_DEPS="git devscripts equivs apt-utils apache2-dev python3-setuptools cython3 python3-dev ca-certificates"
 
-ENV RUN_DEPS="apache2 libapache2-mod-wsgi-py3 javascript-common clustershell libjs-bootstrap libjs-jquery-flot libjs-jquery-tablesorter munge node-uglify fonts-dejavu-core python-redis libjs-requirejs libjs-requirejs-text libjs-three libjs-d3 libjs-handlebars"
+ENV RUN_DEPS="apache2 libapache2-mod-wsgi-py3 javascript-common clustershell libjs-bootstrap libjs-jquery-flot libjs-jquery-tablesorter munge node-uglify fonts-dejavu-core python-redis libjs-requirejs libjs-requirejs-text libjs-three libjs-d3 libjs-handlebars sssd"
 
 # Enable universe and multiverse
 #RUN cat /etc/apt/sources.list && \
@@ -114,7 +114,7 @@ RUN cd /usr/src && \
 
 
 RUN apt-get -y install python3-pip dh-python libjs-async python3-ldap python3-redis 
-RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install  Flask MarkupSafe 
+RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install  Flask MarkupSafe==2.0.1 itsdangerous==2.0.1
 #RUN python3 -m pip --proxy=http://proxy.ad.speechpro.com:3128 install -U pip
 #RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install --upgrade pip
 #RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install Flask MarkupSafe
@@ -165,6 +165,10 @@ RUN chown munge: /var/log/munge /var/lib/munge && \
     mkdir -p /etc/service/munge
 COPY munge.sh /etc/service/munge/run
 RUN chmod +x /etc/service/munge/run
+
+RUN mkdir -p /etc/service/sssd
+COPY sssd.sh /etc/service/sssd/run
+RUN chmod +x /etc/service/sssd/run
 
 # Cleanup
 RUN apt-get clean

@@ -8,5 +8,6 @@ docker run -d -v $data/conf:/etc/slurm-web \
               -v /etc/slurm:/etc/slurm-llnl \
               -v /etc/passwd:/etc/passwd \
               -v /etc/group:/etc/group \
+	      -v /etc/sssd/sssd.conf:/etc/sssd/sssd.conf \
               -p 8081:80 \
               slurm-web
