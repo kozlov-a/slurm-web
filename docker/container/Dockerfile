@@ -114,7 +114,7 @@ RUN cd /usr/src && \
 
 
 RUN apt-get -y install python3-pip dh-python libjs-async python3-ldap python3-redis 
-RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install  Flask MarkupSafe==2.0.1 itsdangerous==2.0.1
+RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install  Flask MarkupSafe itsdangerous==2.0.1
 #RUN python3 -m pip --proxy=http://proxy.ad.speechpro.com:3128 install -U pip
 #RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install --upgrade pip
 #RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install Flask MarkupSafe
