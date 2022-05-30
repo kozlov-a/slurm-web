@@ -5,7 +5,7 @@ data=$PWD
 
 docker run -d -v $data/conf:/etc/slurm-web \
               -v /etc/munge:/etc/munge \
-              -v /etc/slurm:/etc/slurm-llnl \
+              -v /etc/slurm:/usr/local/etc/ \
               -v /etc/passwd:/etc/passwd \
               -v /etc/group:/etc/group \
 	      -v /etc/sssd/sssd.conf:/etc/sssd/sssd.conf \
