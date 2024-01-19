@@ -67,12 +67,12 @@ RUN apt-get -y install libmunge-dev
 RUN cd /usr/src && \
     git -c http.sslVerify=false clone https://github.com/SchedMD/slurm.git && \
     cd slurm && \
-    git checkout remotes/origin/slurm-20.11 && \
+    git checkout remotes/origin/slurm-23.11 && \
     ./configure  && \
     make -j 20 && \
     make install
 
-ENV SLURM_VER=v20.11.8-1
+ENV SLURM_VER=v23.2.2
 RUN cd /usr/src && \
     git -c http.sslVerify=false clone https://github.com/PySlurm/pyslurm.git && \
     cd pyslurm && \
@@ -122,7 +122,7 @@ RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install  Flask MarkupSafe it
 RUN cd /usr/src && \
     git -c http.sslVerify=false clone https://github.com/kozlov-a/slurm-web.git && \
     cd slurm-web && \
-    git checkout slurm-20.11 && \
+    git checkout slurm-23.11 && \
     sed -i "s/'\*.wsgi'/['\*.wsgi']/" setup.py && \
     sed -i '/ python3-pyslurm (>= 16.05),/d' debian/control && \
     sed -i '/ python3-flask,/d' debian/control && \
