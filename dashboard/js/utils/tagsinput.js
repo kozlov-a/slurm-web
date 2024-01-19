@@ -58,7 +58,7 @@ define([
         } else if (tags[lastTagCount] === '(wckey)') {
           wckeys.push(tags[0]);
         } else if (tags[lastTagCount] === '(user)') {
-          users.push(tags[0] + ' ' + tags[1]);
+          users.push(tags.slice(0, lastTagCount).join(' '));
         } else if (tags[lastTagCount] === '(state)') {
           states.push(tags[0]);
         } else if (tags[lastTagCount] === '(reservation)') {
