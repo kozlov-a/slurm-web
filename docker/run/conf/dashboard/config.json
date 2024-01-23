@@ -4,5 +4,5 @@
   "REFRESHCHECKBOX": true,
   "MAXNODESLENGTH": 25,
   "AUTOLOGIN": false,
-  "LOGOURL": "../static/logo.png"
+  "LOGOURL": "../slurm/static/logo.png"
 }
