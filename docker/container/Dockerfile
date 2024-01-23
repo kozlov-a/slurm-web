@@ -36,7 +36,7 @@ CMD ["/sbin/my_init"]
 # Install locales
 RUN locale-gen en_US.UTF-8
 
-ENV BUILD_DEPS="git devscripts equivs apt-utils apache2-dev python3-setuptools cython3 python3-dev ca-certificates"
+ENV BUILD_DEPS="git devscripts equivs apt-utils apache2-dev python3-dev ca-certificates python3-pip"
 
 ENV RUN_DEPS="apache2 libapache2-mod-wsgi-py3 javascript-common clustershell libjs-bootstrap libjs-jquery-flot libjs-jquery-tablesorter munge node-uglify fonts-dejavu-core python-redis libjs-requirejs libjs-requirejs-text libjs-three libjs-d3 libjs-handlebars sssd"
 
@@ -51,7 +51,8 @@ RUN apt-get update -q && \
     ln -s /usr/lib/x86_64-linux-gnu/ /usr/lib64
 
 
-RUN apt-get -y install python3-all python3-setuptools
+RUN apt-get -y install python3-all
+RUN pip3 --proxy=http://proxy.ad.speechpro.com:3128 install setuptools cython
 RUN a2enmod wsgi && \
     a2enconf javascript-common
 
@@ -67,18 +68,19 @@ RUN apt-get -y install libmunge-dev
 RUN cd /usr/src && \
     git -c http.sslVerify=false clone https://github.com/SchedMD/slurm.git && \
     cd slurm && \
-    git checkout remotes/origin/slurm-23.11 && \
+    git checkout slurm-23-02-5-1 && \
     ./configure  && \
     make -j 20 && \
     make install
+# slurm-23-02-5-1  remotes/origin/slurm-23.02
 
 ENV SLURM_VER=v23.2.2
 RUN cd /usr/src && \
     git -c http.sslVerify=false clone https://github.com/PySlurm/pyslurm.git && \
     cd pyslurm && \
     git checkout $SLURM_VER && \
-    python3 setup.py build --slurm-lib=/usr/local/ --slurm-inc=/usr/local/include/slurm/ && \
-    python3 setup.py install
+    python3 setup.py build --slurm-lib=/usr/local/lib --slurm-inc=/usr/local/include && \
+    python3 setup.py install --slurm-lib=/usr/local/lib --slurm-inc=/usr/local/include
     #sed -i 's/__max_slurm_hex_version__ = "0x0f0803"/__max_slurm_hex_version__ = "0x130504"/' setup.py && \
     #tar cvfj ../python-pyslurm_$SLURM_VER.orig.tar.bz2 --exclude .git . && \
     #mk-build-deps -ri -t "apt-get -y --no-install-recommends" && \
